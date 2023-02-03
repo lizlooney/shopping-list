@@ -93,7 +93,7 @@ public final class Utils {
             String value = editText.getText().toString().trim();
             if (value.length() > 0) {
               values.add(value);
-              boolean selectValue = spinners.length > 1;
+              boolean selectValue = spinners.length == 1;
               for (Spinner spinner : spinners) {
                 addValueToSpinner(value, spinner, selectValue);
               }
