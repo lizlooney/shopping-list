@@ -21,8 +21,8 @@
   android:layout_height="wrap_content"
   android:paddingLeft="4dp"
   android:paddingRight="4dp"
-  android:gravity="right"
   android:background="#FF333333"
+  android:textSize="20sp"
   android:textColor="@android:color/white"
   android:singleLine="true"
   android:ellipsize="marquee" />

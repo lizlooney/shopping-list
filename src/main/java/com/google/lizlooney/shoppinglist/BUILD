@@ -19,6 +19,9 @@ package(default_visibility = ["//src:__subpackages__"])
 android_library(
     name = "shoppinglist_activity",
     srcs = glob(["*.java"]),
+    deps = [
+        "@maven//:com_google_code_gson_gson",
+    ],
     manifest = "AndroidManifest.xml",
     resource_files = glob(["res/**"]),
 )

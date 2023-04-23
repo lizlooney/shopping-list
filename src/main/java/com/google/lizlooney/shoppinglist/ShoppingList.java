@@ -44,6 +44,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -75,7 +76,9 @@ public final class ShoppingList extends Activity {
   final static String STORE_FILTER_ALL = "<All Stores>";
   final static String STORE_FILTER_MISSING = "<Missing Store>";
 
-  private Storage storage = new Storage();
+  private final Gson gson = new Gson();
+
+  private Storage storage = new Storage(gson);
   /**
    * All the items, not just the ones currently displayed.
    */
@@ -182,8 +185,8 @@ public final class ShoppingList extends Activity {
 
     loadFromStorage();
 
-    storeFilterAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_large_right);
-    storeFilterAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_large_right);
+    storeFilterAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_store_filter);
+    storeFilterAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_store_filter);
     storeFilterSpinner.setAdapter(storeFilterAdapter);
 
     updateComparator();
@@ -286,6 +289,7 @@ public final class ShoppingList extends Activity {
               new OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
+                  long timestamp = System.currentTimeMillis();
                   for (final Item item : displayedItems) {
                     if (item.getState() == ItemState.IN_SHOPPING_CART) {
                       if (item.getAutoDelete()) {
@@ -295,6 +299,7 @@ public final class ShoppingList extends Activity {
                         storage.deleteItem(item);
                       } else {
                         item.setState(ItemState.DONT_NEED);
+                        item.setLastPurchased(timestamp);
                         storage.saveItem(item);
                       }
                     }
@@ -658,7 +663,8 @@ public final class ShoppingList extends Activity {
             itemBeingEdited = null;
           } else {
             // Add an item.
-            item = new Item(storage.getUnusedItemId());
+            item = new Item();
+            item.setId(storage.getUnusedItemId());
             synchronized (allItemsLock) {
               allItems.add(item);
             }
@@ -709,21 +715,16 @@ public final class ShoppingList extends Activity {
               }
               line = line.trim();
               if (line.length() > 0) {
-                Item item = new Item(storage.getUnusedItemId());
-                item.setState(ItemState.DONT_NEED);
-                if (item.importFromString(line)) {
-                  synchronized (allItemsLock) {
-                    allItems.add(item);
-                  }
-                  allCategories.add(item);
-                  allAisles.add(item);
-                  allStores.add(item);
-                  storage.saveItem(item);
-                  count++;
-                } else {
-                  Log.w(LOG_TAG, "Unable to import item from \"" + line + "\"");
-                  storage.deleteItem(item);
+                Item item = gson.fromJson(line, Item.class);
+                item.setId(storage.getUnusedItemId());
+                synchronized (allItemsLock) {
+                  allItems.add(item);
                 }
+                allCategories.add(item);
+                allAisles.add(item);
+                allStores.add(item);
+                storage.saveItem(item);
+                count++;
               }
             }
           } finally {
@@ -765,7 +766,7 @@ public final class ShoppingList extends Activity {
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getPath(), EXPORT_FILE_NAME)));
         try {
           for (Item item : allItems) {
-            writer.write(item.exportToString());
+            writer.write(gson.toJson(item).replace("\n", " "));
             writer.write("\n");
             count++;
           }

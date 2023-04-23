@@ -15,8 +15,15 @@
  limitations under the License.
 -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@android:id/text1"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:dropDownWidth="wrap_content"
-  android:textColor="@android:color/white" />
+  android:paddingLeft="4dp"
+  android:paddingRight="4dp"
+  android:gravity="right"
+  android:textSize="20sp"
+  android:background="#FF333333"
+  android:textColor="@android:color/white"
+  android:singleLine="true"
+  android:ellipsize="marquee" />

@@ -45,6 +45,7 @@
   <string name="AddAisle">Add Aisle...</string>
   <string name="Stores">Stores:</string>
   <string name="ChooseStores">Choose Stores...</string>
+  <string name="LastPurchased">Last Purchased:</string>
   <string name="AutoDelete">Auto-delete</string>
   <string name="DeleteNow">Delete Now</string>
   <string name="DeleteNowConfirm">Are you sure you want to delete this item?</string>

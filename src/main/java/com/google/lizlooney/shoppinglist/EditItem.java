@@ -42,8 +42,10 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -58,6 +60,7 @@ import java.util.Set;
 public final class EditItem extends Activity {
   public static final String ITEM_DESCRIPTION = "item_description";
   public static final String ITEM_CATEGORY = "item_category";
+  public static final String ITEM_LAST_PURCHASED = "item_last_purchased";
   public static final String ITEM_AUTO_DELETE = "item_auto_delete";
   public static final String ITEM_STORES = "item_stores";
   public static final String ITEM_AISLES = "item_aisles";
@@ -77,6 +80,7 @@ public final class EditItem extends Activity {
   private ArrayAdapter<String> categoryAdapter;
   private LinearLayout storeAislesContainer;
   private final List<Spinner> aisleSpinners = new ArrayList<>();
+  private TextView lastPurchasedTextView;
   private Button chooseStoresButton;
   private Button okButton;
 
@@ -92,6 +96,7 @@ public final class EditItem extends Activity {
     categorySpinner = findViewById(R.id.category);
     storeAislesContainer = findViewById(R.id.storeAislesContainer);
     chooseStoresButton = findViewById(R.id.chooseStores);
+    lastPurchasedTextView = findViewById(R.id.lastPurchased);
     final CheckBox autoDeleteCheckBox = findViewById(R.id.autoDelete);
     Button deleteButton = findViewById(R.id.deleteNow);
     okButton = findViewById(R.id.ok);
@@ -119,8 +124,8 @@ public final class EditItem extends Activity {
     });
 
     // category
-    categoryAdapter = new ArrayAdapter<>(this, R.layout.spinner_item);
-    categoryAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+    categoryAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_category);
+    categoryAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_category);
     categorySpinner.setAdapter(categoryAdapter);
     Utils.updateSpinner(
         categorySpinner,
@@ -153,6 +158,14 @@ public final class EditItem extends Activity {
             chooseStores();
           }
         });
+
+    // last purchased
+    long lastPurchased = startIntent.getLongExtra(ITEM_LAST_PURCHASED, 0);
+    if (lastPurchased == 0) {
+      lastPurchasedTextView.setText("unknown");
+    } else {
+      lastPurchasedTextView.setText(DateFormat.getDateInstance().format(new Date(lastPurchased)));
+    }
 
     // auto-delete
     autoDeleteCheckBox.setChecked(startIntent.getBooleanExtra(ITEM_AUTO_DELETE, false));
@@ -293,14 +306,15 @@ public final class EditItem extends Activity {
       // Create a TextView for the store.
       TextView storeTextView = new TextView(this);
       Utils.setColors(storeTextView);
+      storeTextView.setTextSize(20);
       storeTextView.setText(store);
       row.addView(storeTextView, new LayoutParams(storeWidth, LayoutParams.WRAP_CONTENT, 0f));
 
       // Create a Spinner for the aisle.
       Spinner aisleSpinner = new Spinner(this);
       aisleSpinners.add(aisleSpinner);
-      ArrayAdapter<String> aisleAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_right);
-      aisleAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_right);
+      ArrayAdapter<String> aisleAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_aisle);
+      aisleAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_aisle);
       aisleSpinner.setAdapter(aisleAdapter);
       aisleSpinner.setBackgroundTintList(ColorStateList.valueOf(0xFF00FFFF));
       aisleSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {

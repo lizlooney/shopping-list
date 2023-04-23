@@ -18,6 +18,7 @@ package com.google.lizlooney.shoppinglist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,12 +36,17 @@ public final class Storage {
   private static final String TAG_DISPLAY_MODE = "DisplayMode";
   private static final String TAG_STORE_FILTER = "StoreFilter";
 
+  private final Gson gson;
   private SharedPreferences sharedPreferences;
   private SharedPreferences.Editor sharedPrefsEditor;
 
   private final Object lock = new Object();
   private int maxItemId;
   private final List<Integer> itemIdHoles = new ArrayList<>();
+
+  public Storage(Gson gson) {
+    this.gson = gson;
+  }
 
   public void init(Context context) {
     sharedPreferences = context.getSharedPreferences("ShoppingList", Context.MODE_PRIVATE);
@@ -71,10 +77,10 @@ public final class Storage {
   }
 
   private Item loadItem(int id) {
-    String fullItem = getString(TAG_ITEM_PREFIX + id);
-    if (fullItem != null) {
-      Item item = new Item(id);
-      item.importFromString(fullItem);
+    String json = getString(TAG_ITEM_PREFIX + id);
+    if (json != null) {
+      Item item = gson.fromJson(json, Item.class);
+      item.setId(id);
       return item;
     }
 
@@ -119,8 +125,7 @@ public final class Storage {
   public void saveItem(Item item) {
     synchronized (lock) {
       edit();
-      int id = item.getId();
-      putString(TAG_ITEM_PREFIX + id, item.exportToString());
+      putString(TAG_ITEM_PREFIX + item.getId(), gson.toJson(item));
       commit();
     }
   }

@@ -29,33 +29,16 @@ import java.util.TreeMap;
  * @author lizlooney@gmail.com (Liz Looney)
  */
 public final class Item {
-  private final int id;
-  private String description;
-  private String category;
-  private ItemState state;
+  private transient int id;
+  private String description = "";
+  private String category = "";
+  private ItemState state = ItemState.NEED;
+  private long lastPurchased;
   private boolean autoDelete;
-  private final Map<String, String> storeAisles;
+  private final Map<String, String> storeAisles = new TreeMap<>();
 
-  /**
-   * Constructor used when reading an item from storage.
-   */
-  public Item(int id, String description, String category, Map<String, String> storeAisles, ItemState state) {
+  public void setId(int id) {
     this.id = id;
-    this.description = description;
-    this.category = category;
-    this.storeAisles = new TreeMap<>(storeAisles);
-    this.state = state;
-  }
-
-  /**
-   * Constructor used when creating a new item.
-   */
-  public Item(int id) {
-    this.id = id;
-    description = "";
-    category = "";
-    storeAisles = new TreeMap<>();
-    state = ItemState.NEED;
   }
 
   public int getId() {
@@ -84,6 +67,14 @@ public final class Item {
 
   public ItemState getState() {
     return state;
+  }
+
+  public void setLastPurchased(long lastPurchased) {
+    this.lastPurchased = lastPurchased;
+  }
+
+  public long getLastPurchased() {
+    return lastPurchased;
   }
 
   public void setAutoDelete(boolean autoDelete) {
@@ -133,50 +124,11 @@ public final class Item {
     return new HashSet<>(storeAisles.values());
   }
 
-  public String exportToString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(description)
-        .append("\t").append(category)
-        .append("\t").append(state)
-        .append("\t").append(autoDelete);
-    for (Map.Entry<String, String> entry : storeAisles.entrySet()) {
-      sb.append("\t").append(entry.getKey()).append("\t").append(entry.getValue());
-    }
-    return sb.toString();
-  }
-
-  public boolean importFromString(String s) {
-    String[] parts = s.split("\t");
-    int i = 0;
-    String d = parts[i++].trim();
-    if (d.length() == 0) {
-      return false;
-    }
-    setDescription(d);
-
-    setCategory(parts[i++].trim());
-    setState(ItemState.valueOf(parts[i++]));
-    setAutoDelete(Boolean.valueOf(parts[i++]));
-
-    clearStoreAisles();
-    while (i + 1 < parts.length) {
-      String store = parts[i++].trim();
-      String aisle = parts[i++].trim();
-      if (store.length() > 0 && aisle.length() > 0) {
-        addStoreAisle(store, aisle);
-      }
-    }
-
-    return true;
-  }
-
   void exportToIntent(Intent intent) {
-    String descriptionString = description;
-    intent.putExtra(EditItem.ITEM_DESCRIPTION, descriptionString);
-    String categoryString = category;
-    intent.putExtra(EditItem.ITEM_CATEGORY, categoryString);
-    boolean autoDeleteBoolean = autoDelete;
-    intent.putExtra(EditItem.ITEM_AUTO_DELETE, autoDeleteBoolean);
+    intent.putExtra(EditItem.ITEM_DESCRIPTION, description);
+    intent.putExtra(EditItem.ITEM_CATEGORY, category);
+    intent.putExtra(EditItem.ITEM_LAST_PURCHASED, lastPurchased);
+    intent.putExtra(EditItem.ITEM_AUTO_DELETE, autoDelete);
 
     List<String> stores = new ArrayList<>();
     List<String> aisles = new ArrayList<>();

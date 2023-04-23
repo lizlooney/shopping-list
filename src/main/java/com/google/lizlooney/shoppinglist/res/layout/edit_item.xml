@@ -47,7 +47,7 @@
       android:text="@string/Category"
       android:textStyle="bold"
       android:textColor="@android:color/white" />
-    <Spinner 
+    <Spinner
       android:id="@+id/category"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -88,10 +88,26 @@
     <Button
       android:id="@+id/chooseStores"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content" 
+      android:layout_height="wrap_content"
       android:minHeight="0dp" android:minWidth="0dp"
       android:layout_marginLeft="18dp"
       android:text="@string/ChooseStores" />
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="4dp"
+      android:text="@string/LastPurchased"
+      android:textStyle="bold"
+      android:textColor="@android:color/white" />
+    <TextView
+      android:id="@+id/lastPurchased"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="20dp"
+      android:layout_marginRight="5dp"
+      android:textSize="20sp"
+      android:textColor="@android:color/white" />
 
     <LinearLayout
       android:orientation="horizontal"
