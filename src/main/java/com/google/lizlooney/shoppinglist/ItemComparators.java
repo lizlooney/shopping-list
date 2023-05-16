@@ -56,7 +56,7 @@ public final class ItemComparators {
         }
 
         if (storeFilter != null) {
-          int result = o1.getAisle(storeFilter).compareToIgnoreCase(o2.getAisle(storeFilter));
+          int result = Aisles.compareAisles(o1.getAisle(storeFilter), o2.getAisle(storeFilter));
           if (result != 0) {
             return result;
           }

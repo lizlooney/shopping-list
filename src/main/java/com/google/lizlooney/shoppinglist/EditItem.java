@@ -73,7 +73,7 @@ public final class EditItem extends Activity {
 
   private final Set<String> allCategories = new TreeSet<>();
   private final Set<String> allStores = new TreeSet<>();
-  private final Set<String> allAisles = new TreeSet<>();
+  private final Set<String> allAisles = new TreeSet<>((a1, a2) -> Aisles.compareAisles(a1, a2));
 
   private EditText descriptionEditText;
   private Spinner categorySpinner;
