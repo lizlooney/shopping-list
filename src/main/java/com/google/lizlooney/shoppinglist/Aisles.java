@@ -57,4 +57,31 @@ public final class Aisles {
       return aisles.toArray(new String[0]);
     }
   }
+
+  public static int compareAisles(String a1, String a2) {
+    // Numbered aisles come first, in numerical order.
+    Integer n1 = null;
+    try {
+      n1 = Integer.parseInt(a1);
+    } catch (NumberFormatException e) {
+    }
+    Integer n2 = null;
+    try {
+      n2 = Integer.parseInt(a2);
+    } catch (NumberFormatException e) {
+    }
+    if (n1 != null) {
+      if (n2 != null) {
+        return n1 - n2;
+      } else {
+        return -1;
+      }
+    } else {
+      if (n2 != null) {
+        return 1;
+      } else {
+        return a1.compareToIgnoreCase(a2);
+      }
+    }
+  }
 }
