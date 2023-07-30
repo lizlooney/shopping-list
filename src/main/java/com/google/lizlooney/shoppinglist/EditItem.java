@@ -366,7 +366,21 @@ public final class EditItem extends Activity {
         for (String store : itemStores) {
           String aisle = oldStoreAisles.get(store);
           if (aisle == null) {
-            aisle = "1";
+            aisle = "1"; // If we can't figure out something better, use aisle 1.
+            // If there is an aisle with the same name as the store, use it.
+            if (allAisles.contains(store)) {
+              aisle = store;
+            } else {
+              // If there was already a store and its aisle was not the store name, use that aisle.
+              for (Map.Entry<String, String> entry : oldStoreAisles.entrySet()) {
+                String oldStore = entry.getKey();
+                String oldStoreAisle = entry.getValue();
+                if (!oldStoreAisle.equals(oldStore)) {
+                  aisle = oldStoreAisle;
+                  break;
+                }
+              }
+            }
           }
           itemStoreAisles.put(store, aisle);
         }
