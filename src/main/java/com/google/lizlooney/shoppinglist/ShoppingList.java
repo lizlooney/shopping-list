@@ -17,7 +17,9 @@
 package com.google.lizlooney.shoppinglist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -289,22 +291,9 @@ public final class ShoppingList extends Activity {
               new OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
-                  long timestamp = System.currentTimeMillis();
-                  for (final Item item : displayedItems) {
-                    if (item.getState() == ItemState.IN_SHOPPING_CART) {
-                      if (item.getAutoDelete()) {
-                        synchronized (allItemsLock) {
-                          allItems.remove(item);
-                        }
-                        storage.deleteItem(item);
-                      } else {
-                        item.setState(ItemState.DONT_NEED);
-                        item.setLastPurchased(timestamp);
-                        storage.saveItem(item);
-                      }
-                    }
-                  }
-                  updateDisplay();
+                  areYouSure(
+                      getString(R.string.ClearCheckedItemsWarning),
+                      () -> clearCheckedItems());
                   return true;
                 }
               });
@@ -319,7 +308,9 @@ public final class ShoppingList extends Activity {
                 new OnMenuItemClickListener() {
                   @Override
                   public boolean onMenuItemClick(MenuItem menuItem) {
-                    importFromFile();
+                    areYouSure(
+                        getString(R.string.ImportItemsWarning),
+                        () -> importFromFile());
                     return true;
                   }
                 });
@@ -687,6 +678,40 @@ public final class ShoppingList extends Activity {
         updateDisplay();
       }
     }
+  }
+
+  private void areYouSure(String message, final Runnable runnable) {
+    new AlertDialog.Builder(this)
+        .setTitle(getString(R.string.AreYouSure))
+        .setMessage(message)
+        .setIcon(android.R.drawable.ic_dialog_alert)
+        .setPositiveButton(
+            android.R.string.yes,
+            new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int whichButton) {
+                runnable.run();
+              }})
+        .setNegativeButton(android.R.string.no, null)
+        .show();
+  }
+
+  private void clearCheckedItems() {
+    long timestamp = System.currentTimeMillis();
+    for (final Item item : displayedItems) {
+      if (item.getState() == ItemState.IN_SHOPPING_CART) {
+        if (item.getAutoDelete()) {
+          synchronized (allItemsLock) {
+            allItems.remove(item);
+          }
+          storage.deleteItem(item);
+        } else {
+          item.setState(ItemState.DONT_NEED);
+          item.setLastPurchased(timestamp);
+          storage.saveItem(item);
+        }
+      }
+    }
+    updateDisplay();
   }
 
   private void importFromFile() {

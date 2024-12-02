@@ -36,6 +36,9 @@
   <string name="NoItemsNeededAtStore">Hooray, no items needed at %s!</string>
   <string name="ClearSearch">Clear</string>
   <string name="HideSearch">Hide</string>
+  <string name="ClearCheckedItemsWarning">This cannot be undone.</string>
+  <string name="ImportItemsWarning">This will delete all the existing items and import new items.</string>
+  <string name="AreYouSure">Are you sure?</string>
 
   <string name="edit_item_title">Shopping List - Edit Item</string>
   <string name="Description">Description:</string>
